@@ -140,7 +140,7 @@ export class SuccessComponent implements OnInit {
   constructor(private route: ActivatedRoute, private api: ApiService) {}
 
   ngOnInit() {
-    this.route.queryParams.subscribe(params => {
+    this.route.params.subscribe(params => {
       if (params['id']) {
         this.api.getAppointment(params['id']).subscribe(data => {
           this.appointment = data;

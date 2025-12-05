@@ -7,6 +7,10 @@ import { AdminLoginComponent } from './features/admin/admin-login.component';
 import { AdminLayoutComponent, AdminDashboardComponent } from './features/admin/admin-dashboard.component';
 import { AdminAppointmentsComponent } from './features/admin/admin-appointments.component';
 import { AdminServicesComponent } from './features/admin/admin-services.component';
+import { PublicLayoutComponent } from './features/public/public-layout.component';
+import { UserLoginComponent } from './features/public/auth/user-login.component';
+import { UserSignupComponent } from './features/public/auth/user-signup.component';
+import { UserDashboardComponent } from './features/public/user-dashboard.component';
 import { inject } from '@angular/core';
 import { AuthService } from './core/services/auth.service';
 import { Router } from '@angular/router';
@@ -20,11 +24,24 @@ const authGuard = () => {
 };
 
 export const routes: Routes = [
-  // Public Routes
-  { path: '', component: LandingComponent },
-  { path: 'services', component: ServicesComponent },
-  { path: 'book', component: BookingComponent },
-  { path: 'success/:id', component: SuccessComponent },
+  // Public Routes with Layout
+  {
+    path: '',
+    component: PublicLayoutComponent,
+    children: [
+      { path: '', component: LandingComponent },
+      { path: 'services', component: ServicesComponent },
+      { path: 'book', component: BookingComponent },
+      { path: 'success/:id', component: SuccessComponent },
+      { path: 'login', component: UserLoginComponent },
+      { path: 'signup', component: UserSignupComponent },
+      { 
+        path: 'user/dashboard', 
+        component: UserDashboardComponent,
+        canActivate: [authGuard] 
+      }
+    ]
+  },
 
   // Admin Routes
   { path: 'admin/login', component: AdminLoginComponent },

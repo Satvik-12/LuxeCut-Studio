@@ -52,12 +52,29 @@ import { ApiService } from '../../core/services/api.service';
               </span>
             </td>
             <td>
-              <select [ngModel]="apt.status" (ngModelChange)="updateStatus(apt.id, $event)" class="action-select">
-                <option value="PENDING">Pending</option>
-                <option value="CONFIRMED">Confirm</option>
-                <option value="COMPLETED">Complete</option>
-                <option value="CANCELLED">Cancel</option>
-              </select>
+              <div class="actions">
+                <button *ngIf="apt.status === 'PENDING'" 
+                        (click)="updateStatus(apt.id, 'CONFIRMED')" 
+                        class="btn-action btn-confirm">
+                  Confirm
+                </button>
+                
+                <button *ngIf="apt.status === 'CONFIRMED'" 
+                        (click)="updateStatus(apt.id, 'COMPLETED')" 
+                        class="btn-action btn-complete">
+                  Complete
+                </button>
+
+                <button *ngIf="apt.status === 'PENDING' || apt.status === 'CONFIRMED'" 
+                        (click)="updateStatus(apt.id, 'CANCELLED')" 
+                        class="btn-action btn-cancel">
+                  Cancel
+                </button>
+                
+                <span *ngIf="apt.status === 'COMPLETED' || apt.status === 'CANCELLED'" class="text-gray-400 text-sm">
+                  No actions
+                </span>
+              </div>
             </td>
           </tr>
         </tbody>
@@ -122,6 +139,7 @@ import { ApiService } from '../../core/services/api.service';
           padding: 1rem;
           border-bottom: 1px solid var(--color-gray-100);
           color: var(--color-navy-900);
+          vertical-align: middle;
         }
 
         tr:last-child td {
@@ -150,11 +168,54 @@ import { ApiService } from '../../core/services/api.service';
       &.cancelled { background-color: #FEE2E2; color: #991B1B; }
     }
 
-    .action-select {
-      padding: 0.25rem;
-      border: 1px solid var(--color-gray-300);
-      border-radius: 0.25rem;
+    .actions {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .btn-action {
+      padding: 0.375rem 0.75rem;
+      border-radius: 0.375rem;
       font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.2s;
+
+      &:hover {
+        opacity: 0.9;
+      }
+    }
+
+    .btn-confirm {
+      background-color: #DCFCE7;
+      color: #166534;
+      border-color: #86EFAC;
+
+      &:hover {
+        background-color: #BBF7D0;
+      }
+    }
+
+    .btn-complete {
+      background-color: #DBEAFE;
+      color: #1E40AF;
+      border-color: #93C5FD;
+
+      &:hover {
+        background-color: #BFDBFE;
+      }
+    }
+
+    .btn-cancel {
+      background-color: white;
+      color: #991B1B;
+      border-color: #FECACA;
+
+      &:hover {
+        background-color: #FEE2E2;
+      }
     }
 
     .empty-state {

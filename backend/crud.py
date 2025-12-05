@@ -96,3 +96,23 @@ def is_slot_available(db: Session, stylist_id: int, date_obj: date, start_time):
         return False
         
     return True
+
+# User
+def get_user_by_email(db: Session, email: str):
+    return db.query(models.User).filter(models.User.email == email).first()
+
+def create_user(db: Session, user: schemas.UserCreate):
+    hashed_password = get_password_hash(user.password)
+    db_user = models.User(
+        name=user.name,
+        email=user.email,
+        phone=user.phone,
+        password_hash=hashed_password
+    )
+    db.add(db_user)
+    db.commit()
+    db.refresh(db_user)
+    return db_user
+
+def get_user_appointments(db: Session, user_id: int):
+    return db.query(models.Appointment).filter(models.Appointment.user_id == user_id).all()

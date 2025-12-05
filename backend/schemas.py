@@ -69,13 +69,14 @@ class AppointmentBase(BaseModel):
     start_time: time
 
 class AppointmentCreate(AppointmentBase):
-    pass
+    user_id: Optional[int] = None
 
 class AppointmentUpdate(BaseModel):
     status: str
 
 class Appointment(AppointmentBase):
     id: int
+    user_id: Optional[int] = None
     status: str
     created_at: Optional[datetime]
     updated_at: Optional[datetime]
@@ -93,3 +94,40 @@ class AdminLogin(BaseModel):
 class Token(BaseModel):
     access_token: str
     token_type: str
+
+from pydantic import BaseModel, EmailStr, Field, validator
+import re
+
+# ...
+
+class UserBase(BaseModel):
+    name: str = Field(..., min_length=2, max_length=100)
+    email: EmailStr
+    phone: str = Field(..., min_length=10, max_length=15)
+
+class UserCreate(UserBase):
+    password: str = Field(..., min_length=8)
+
+    @validator('password')
+    def validate_password(cls, v):
+        if not re.search(r'[A-Z]', v):
+            raise ValueError('Password must contain at least one uppercase letter')
+        if not re.search(r'[a-z]', v):
+            raise ValueError('Password must contain at least one lowercase letter')
+        if not re.search(r'[0-9]', v):
+            raise ValueError('Password must contain at least one number')
+        if not re.search(r'[!@#$%^&*(),.?":{}|<>]', v):
+            raise ValueError('Password must contain at least one special character')
+        return v
+
+class UserLogin(BaseModel):
+    email: str
+    password: str
+
+class User(UserBase):
+    id: int
+    created_at: Optional[datetime]
+    updated_at: Optional[datetime]
+
+    class Config:
+        orm_mode = True
