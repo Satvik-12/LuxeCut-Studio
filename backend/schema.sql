@@ -47,9 +47,21 @@ CREATE TABLE time_slots (
     FOREIGN KEY (stylist_id) REFERENCES stylists(id) ON DELETE SET NULL
 );
 
+-- Table: users
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    phone VARCHAR(20) NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
 -- Table: appointments
 CREATE TABLE appointments (
     id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
     customer_name VARCHAR(100) NOT NULL,
     customer_phone VARCHAR(20) NOT NULL,
     notes TEXT,
@@ -60,6 +72,7 @@ CREATE TABLE appointments (
     status VARCHAR(20) DEFAULT 'PENDING',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL,
     FOREIGN KEY (service_id) REFERENCES services(id),
     FOREIGN KEY (stylist_id) REFERENCES stylists(id) ON DELETE SET NULL
 );

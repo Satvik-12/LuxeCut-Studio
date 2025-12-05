@@ -39,6 +39,10 @@ export class ApiService {
     return this.http.get<any>(`${this.apiUrl}/appointments/${id}`);
   }
 
+  getUserAppointments(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/user/appointments`);
+  }
+
   // Admin
   getAdminDashboard(): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/admin/dashboard`);

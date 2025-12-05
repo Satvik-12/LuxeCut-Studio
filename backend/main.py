@@ -2,10 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import models
 from database import engine
-from routers import public, admin
-
-# Create tables - REMOVED (using schema.sql)
-# models.Base.metadata.create_all(bind=engine)
+from routers import public, admin, auth, user
 
 app = FastAPI(title="LuxeCut Studio API")
 
@@ -26,6 +23,8 @@ app.add_middleware(
 
 app.include_router(public.router)
 app.include_router(admin.router)
+app.include_router(auth.router)
+app.include_router(user.router)
 
 @app.get("/")
 def read_root():

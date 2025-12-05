@@ -44,10 +44,24 @@ class TimeSlot(Base):
 
     stylist = relationship("Stylist", back_populates="time_slots")
 
+class User(Base):
+    __tablename__ = "users"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(100), nullable=False)
+    email = Column(String(100), unique=True, index=True, nullable=False)
+    phone = Column(String(20), nullable=False)
+    password_hash = Column(String(255), nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
+    appointments = relationship("Appointment", back_populates="user")
+
 class Appointment(Base):
     __tablename__ = "appointments"
 
     id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
     customer_name = Column(String(100), nullable=False)
     customer_phone = Column(String(20), nullable=False)
     notes = Column(Text, nullable=True)
@@ -59,6 +73,7 @@ class Appointment(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
+    user = relationship("User", back_populates="appointments")
     service = relationship("Service", back_populates="appointments")
     stylist = relationship("Stylist", back_populates="appointments")
 

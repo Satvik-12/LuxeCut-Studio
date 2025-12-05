@@ -472,7 +472,7 @@ export class BookingComponent implements OnInit {
       };
       this.api.createAppointment(bookingData).subscribe({
         next: (res) => {
-          this.router.navigate(['/success'], { queryParams: { id: res.id } });
+          this.router.navigate(['/success', res.id]);
         },
         error: (err) => alert('Booking failed. Please try again.')
       });
