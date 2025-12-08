@@ -64,7 +64,23 @@ export class ApiService {
     return this.http.post<any>(`${this.apiUrl}/admin/services`, service);
   }
 
+  getAdminServices(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/admin/services`);
+  }
+
+  updateService(id: number, service: any): Observable<any> {
+    return this.http.patch<any>(`${this.apiUrl}/admin/services/${id}`, service);
+  }
+
   createStylist(stylist: any): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/admin/stylists`, stylist);
+  }
+
+  getAdminStylists(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/admin/stylists`);
+  }
+
+  updateStylist(id: number, stylist: any): Observable<any> {
+    return this.http.patch<any>(`${this.apiUrl}/admin/stylists/${id}`, stylist);
   }
 }

@@ -115,6 +115,43 @@ import { RouterLink } from '@angular/router';
         </div>
       </section>
 
+      <!-- Contact Section -->
+      <section class="contact-section">
+        <div class="container">
+          <div class="contact-grid">
+            <div class="contact-info">
+              <h2>Visit Us</h2>
+              <p class="address">
+                123 Luxury Lane, Fashion District<br>
+                Mumbai, Maharashtra 400050
+              </p>
+              
+              <div class="contact-actions">
+                <a href="tel:+919876543210" class="btn btn-primary">
+                  Call Now
+                </a>
+                <a href="#" class="btn btn-outline">
+                  Chat on WhatsApp
+                </a>
+              </div>
+              
+              <div class="hours">
+                <h3>Opening Hours</h3>
+                <p>Mon - Sun: 10:00 AM - 8:00 PM</p>
+              </div>
+            </div>
+            
+            <div class="map-wrapper">
+              <!-- Placeholder for Map -->
+              <div class="map-placeholder">
+                <span>Google Maps Embed</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
       <!-- Footer -->
       <footer>
         <div class="container">
@@ -404,6 +441,77 @@ import { RouterLink } from '@angular/router';
             border-bottom: 1px solid var(--color-orange-500);
             padding-bottom: 0.25rem;
           }
+        }
+      }
+    }
+
+    /* Contact Section */
+    .contact-section {
+      padding: 5rem 0;
+      background-color: var(--color-gray-50);
+
+      .contact-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 3rem;
+        
+        @media (min-width: 768px) {
+          grid-template-columns: 1fr 1fr;
+          align-items: center;
+        }
+      }
+
+      .contact-info {
+        h2 {
+          font-size: 2.25rem;
+          font-weight: 700;
+          color: var(--color-navy-900);
+          margin-bottom: 1rem;
+        }
+
+        .address {
+          font-size: 1.125rem;
+          color: var(--color-gray-600);
+          margin-bottom: 2rem;
+          line-height: 1.6;
+        }
+
+        .contact-actions {
+          display: flex;
+          gap: 1rem;
+          margin-bottom: 2.5rem;
+          flex-wrap: wrap;
+        }
+
+        .hours {
+          h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--color-navy-900);
+            margin-bottom: 0.5rem;
+          }
+          p {
+            color: var(--color-gray-600);
+          }
+        }
+      }
+
+      .map-wrapper {
+        height: 20rem;
+        background-color: var(--color-gray-200);
+        border-radius: 1rem;
+        overflow: hidden;
+        position: relative;
+
+        .map-placeholder {
+          width: 100%;
+          height: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: var(--color-gray-500);
+          font-weight: 600;
+          background-color: var(--color-gray-100);
         }
       }
     }

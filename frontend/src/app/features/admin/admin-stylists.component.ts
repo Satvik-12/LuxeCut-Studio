@@ -4,13 +4,13 @@ import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../core/services/api.service';
 
 @Component({
-  selector: 'app-admin-services',
+  selector: 'app-admin-stylists',
   standalone: true,
   imports: [CommonModule, FormsModule],
   template: `
     <div class="page-header">
-      <h2>Services</h2>
-      <button (click)="openAddModal()" class="btn btn-primary">Add Service</button>
+      <h2>Stylists</h2>
+      <button (click)="openAddModal()" class="btn btn-primary">Add Stylist</button>
     </div>
 
     <div class="table-container">
@@ -18,29 +18,25 @@ import { ApiService } from '../../core/services/api.service';
         <thead>
           <tr>
             <th>Name</th>
-            <th>Description</th>
-            <th>Duration</th>
-            <th>Price</th>
+            <th>Specialties</th>
             <th>Status</th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let service of services">
-            <td class="font-bold">{{ service.name }}</td>
-            <td class="text-gray">{{ service.description }}</td>
-            <td>{{ service.duration_minutes }} mins</td>
-            <td>₹{{ service.price }}</td>
+          <tr *ngFor="let stylist of stylists">
+            <td class="font-bold">{{ stylist.name }}</td>
+            <td class="text-gray">{{ stylist.specialties || '-' }}</td>
             <td>
-              <span class="badge" [class.badge-success]="service.is_active" [class.badge-error]="!service.is_active">
-                {{ service.is_active ? 'Active' : 'Inactive' }}
+              <span class="badge" [class.badge-success]="stylist.is_active" [class.badge-error]="!stylist.is_active">
+                {{ stylist.is_active ? 'Active' : 'Inactive' }}
               </span>
             </td>
             <td>
               <div class="actions">
-                <button (click)="openEditModal(service)" class="btn-icon">Edit</button>
-                <button (click)="toggleStatus(service)" class="btn-icon" [class.text-red]="service.is_active" [class.text-green]="!service.is_active">
-                  {{ service.is_active ? 'Deactivate' : 'Activate' }}
+                <button (click)="openEditModal(stylist)" class="btn-icon">Edit</button>
+                <button (click)="toggleStatus(stylist)" class="btn-icon" [class.text-red]="stylist.is_active" [class.text-green]="!stylist.is_active">
+                  {{ stylist.is_active ? 'Deactivate' : 'Activate' }}
                 </button>
               </div>
             </td>
@@ -49,29 +45,20 @@ import { ApiService } from '../../core/services/api.service';
       </table>
     </div>
 
-    <!-- Add/Edit Service Modal -->
+    <!-- Add/Edit Stylist Modal -->
     <div *ngIf="showModal" class="modal-overlay">
       <div class="modal-content">
-        <h3>{{ isEditing ? 'Edit Service' : 'Add New Service' }}</h3>
-        <form (ngSubmit)="saveService()">
+        <h3>{{ isEditing ? 'Edit Stylist' : 'Add New Stylist' }}</h3>
+        <form (ngSubmit)="saveStylist()">
           <div class="form-group">
             <label>Name</label>
-            <input [(ngModel)]="newService.name" name="name" type="text" required class="form-control">
+            <input [(ngModel)]="newStylist.name" name="name" type="text" required class="form-control">
           </div>
           <div class="form-group">
-            <label>Description</label>
-            <textarea [(ngModel)]="newService.description" name="description" class="form-control"></textarea>
+            <label>Specialties</label>
+            <textarea [(ngModel)]="newStylist.specialties" name="specialties" class="form-control" placeholder="e.g. Haircuts, Coloring"></textarea>
           </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label>Duration (min)</label>
-              <input [(ngModel)]="newService.duration_minutes" name="duration" type="number" required class="form-control">
-            </div>
-            <div class="form-group">
-              <label>Price</label>
-              <input [(ngModel)]="newService.price" name="price" type="number" required class="form-control">
-            </div>
-          </div>
+          
           <div class="modal-actions">
             <button type="button" (click)="showModal = false" class="btn-cancel">Cancel</button>
             <button type="submit" class="btn btn-primary">Save</button>
@@ -190,26 +177,6 @@ import { ApiService } from '../../core/services/api.service';
         margin-bottom: 0.5rem;
         font-size: 0.875rem;
       }
-
-      input, textarea {
-        width: 100%;
-        border: 1px solid var(--color-gray-300);
-        border-radius: 0.5rem;
-        padding: 0.75rem;
-        outline: none;
-        box-sizing: border-box;
-
-        &:focus {
-          border-color: var(--color-orange-500);
-          box-shadow: 0 0 0 2px rgba(255, 138, 61, 0.2);
-        }
-      }
-    }
-
-    .form-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1rem;
     }
 
     .modal-actions {
@@ -229,62 +196,60 @@ import { ApiService } from '../../core/services/api.service';
     }
   `]
 })
-export class AdminServicesComponent implements OnInit {
-  services: any[] = [];
+export class AdminStylistsComponent implements OnInit {
+  stylists: any[] = [];
   showModal = false;
   isEditing = false;
   editingId: number | null = null;
   
-  newService = {
+  newStylist = {
     name: '',
-    description: '',
-    duration_minutes: 30,
-    price: 0,
+    specialties: '',
     is_active: true
   };
 
   constructor(private api: ApiService) {}
 
   ngOnInit() {
-    this.loadServices();
+    this.loadStylists();
   }
 
-  loadServices() {
-    this.api.getAdminServices().subscribe(data => this.services = data);
+  loadStylists() {
+    this.api.getAdminStylists().subscribe(data => this.stylists = data);
   }
 
   openAddModal() {
     this.isEditing = false;
     this.editingId = null;
-    this.newService = { name: '', description: '', duration_minutes: 30, price: 0, is_active: true };
+    this.newStylist = { name: '', specialties: '', is_active: true };
     this.showModal = true;
   }
 
-  openEditModal(service: any) {
+  openEditModal(stylist: any) {
     this.isEditing = true;
-    this.editingId = service.id;
-    this.newService = { ...service };
+    this.editingId = stylist.id;
+    this.newStylist = { ...stylist };
     this.showModal = true;
   }
 
-  saveService() {
+  saveStylist() {
     if (this.isEditing && this.editingId) {
-      this.api.updateService(this.editingId, this.newService).subscribe(() => {
+      this.api.updateStylist(this.editingId, this.newStylist).subscribe(() => {
         this.showModal = false;
-        this.loadServices();
+        this.loadStylists();
       });
     } else {
-      this.api.createService(this.newService).subscribe(() => {
+      this.api.createStylist(this.newStylist).subscribe(() => {
         this.showModal = false;
-        this.loadServices();
+        this.loadStylists();
       });
     }
   }
   
-  toggleStatus(service: any) {
-    const updatedService = { ...service, is_active: !service.is_active };
-    this.api.updateService(service.id, updatedService).subscribe(() => {
-      this.loadServices();
+  toggleStatus(stylist: any) {
+    const updatedStylist = { ...stylist, is_active: !stylist.is_active };
+    this.api.updateStylist(stylist.id, updatedStylist).subscribe(() => {
+      this.loadStylists();
     });
   }
 }

@@ -47,7 +47,11 @@ import { ApiService } from '../../core/services/api.service';
             </td>
             <td>{{ apt.stylist?.name || '-' }}</td>
             <td>
-              <span class="status-badge" [ngClass]="apt.status.toLowerCase()">
+              <span class="badge" 
+                [class.badge-warning]="apt.status === 'PENDING'"
+                [class.badge-success]="apt.status === 'CONFIRMED'"
+                [class.badge-neutral]="apt.status === 'COMPLETED'"
+                [class.badge-error]="apt.status === 'CANCELLED'">
                 {{ apt.status }}
               </span>
             </td>
@@ -155,18 +159,7 @@ import { ApiService } from '../../core/services/api.service';
     .font-bold { font-weight: 600; }
     .sub-text { font-size: 0.875rem; color: var(--color-gray-500); }
 
-    .status-badge {
-      padding: 0.25rem 0.75rem;
-      border-radius: 9999px;
-      font-size: 0.75rem;
-      font-weight: 700;
-      text-transform: uppercase;
 
-      &.pending { background-color: #FEF3C7; color: #92400E; }
-      &.confirmed { background-color: #DCFCE7; color: #166534; }
-      &.completed { background-color: #DBEAFE; color: #1E40AF; }
-      &.cancelled { background-color: #FEE2E2; color: #991B1B; }
-    }
 
     .actions {
       display: flex;

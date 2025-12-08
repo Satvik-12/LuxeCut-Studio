@@ -21,9 +21,9 @@ LuxeCut Studio is a modern, full-stack web application for salon booking managem
 
 ## Tech Stack
 
-- **Backend**: Python, FastAPI, SQLAlchemy, SQLite (Dev) / MySQL (Prod ready)
-- **Frontend**: Angular 19, TailwindCSS (via CDN/Classes), TypeScript
-- **Database**: SQLite (default for easy setup)
+- **Backend**: Python, FastAPI, SQLAlchemy, MySQL
+- **Frontend**: Angular 19, SCSS, TypeScript
+- **Database**: MySQL
 
 ## Setup & Running
 
