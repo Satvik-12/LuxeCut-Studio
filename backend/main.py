@@ -36,3 +36,7 @@ app.include_router(user.router)
 @app.get("/")
 def read_root():
     return {"message": "Welcome to LuxeCut Studio API"}
+
+@app.get("/wakeup")
+def wakeup():
+    return {"status": "awake"}

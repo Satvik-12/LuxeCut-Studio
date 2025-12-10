@@ -12,6 +12,10 @@ export class ApiService {
 
   constructor(private http: HttpClient) { }
 
+  wakeup(): Observable<any> {
+    return this.http.get<any>(`${environment.apiBaseUrl}/wakeup`);
+  }
+
   // Public
   getServices(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/services`);
