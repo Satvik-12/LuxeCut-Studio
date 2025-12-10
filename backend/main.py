@@ -11,6 +11,7 @@ origins = [
     "http://localhost:4200", # Angular
     "http://localhost:5173", # Vite (just in case)
     "http://localhost:3000",
+    "https://luxecut-studio.netlify.app",
 ]
 
 app.add_middleware(
