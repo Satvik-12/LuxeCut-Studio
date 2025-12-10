@@ -16,10 +16,11 @@ export class AppComponent implements OnInit {
   title = 'luxe-cut-frontend';
   isLoading = true;
 
-  constructor(private apiService: ApiService) {}
+  constructor(private apiService: ApiService) {
+    this.apiService.wakeup().subscribe();
+  }
 
   ngOnInit() {
-    this.apiService.wakeup().subscribe();
   }
 
   onLoadingComplete() {
