@@ -167,6 +167,7 @@ import { ApiService } from '../../core/services/api.service';
       align-items: center;
     }
 
+
     .btn-action {
       padding: 0.375rem 0.75rem;
       border-radius: 0.375rem;
