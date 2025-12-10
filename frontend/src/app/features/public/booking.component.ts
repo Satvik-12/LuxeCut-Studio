@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ApiService } from '../../core/services/api.service';
+import { CalendarComponent } from '../../core/components/calendar.component';
 
 @Component({
   selector: 'app-booking',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, CalendarComponent],
   template: `
     <div class="booking-page">
       <div class="booking-container">
@@ -86,9 +87,15 @@ import { ApiService } from '../../core/services/api.service';
             <div *ngIf="step === 3" class="step-content animate-fade-in">
               <h2>Choose a Time</h2>
               
-              <div class="form-group">
-                <label>Date</label>
-                <input type="date" [(ngModel)]="selectedDate" (change)="checkAvailability()" [min]="minDate">
+              <div class="form-group center-calendar">
+                <label>Select Date</label>
+                <div class="calendar-wrapper">
+                  <app-calendar 
+                    [minDate]="minDate" 
+                    [selectedDate]="selectedDate"
+                    (dateChange)="onDateSelect($event)">
+                  </app-calendar>
+                </div>
               </div>
 
               <div *ngIf="availableSlots.length > 0" class="slots-grid">
@@ -409,6 +416,19 @@ import { ApiService } from '../../core/services/api.service';
       padding: 2rem 0;
       color: var(--color-gray-500);
     }
+    
+    .center-calendar {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+    
+    .calendar-wrapper {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+    }
 
     /* Summary Box */
     .summary-box {
@@ -535,6 +555,11 @@ export class BookingComponent implements OnInit {
 
   selectTime(time: string) {
     this.selectedTime = time;
+  }
+
+  onDateSelect(date: string) {
+    this.selectedDate = date;
+    this.checkAvailability();
   }
 
   checkAvailability() {
