@@ -4,11 +4,13 @@ import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } 
 import { Router, ActivatedRoute } from '@angular/router';
 import { ApiService } from '../../core/services/api.service';
 import { CalendarComponent } from '../../core/components/calendar.component';
+import { LoadingBannerComponent } from '../../core/components/loading-banner.component';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-booking',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, CalendarComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, CalendarComponent, LoadingBannerComponent],
   template: `
     <div class="booking-page">
       <div class="booking-container">
@@ -41,7 +43,9 @@ import { CalendarComponent } from '../../core/components/calendar.component';
           </div>
         </div>
 
-        <div class="booking-card">
+        <app-loading-banner *ngIf="isLoading" message="Loading booking options..."></app-loading-banner>
+
+        <div *ngIf="!isLoading" class="booking-card animate-fade-in">
           <div class="card-body">
             <!-- Step 1: Service Selection -->
             <div *ngIf="step === 1" class="step-content animate-fade-in">
@@ -506,6 +510,7 @@ export class BookingComponent implements OnInit {
   bookingForm: FormGroup;
   minDate: string = '';
   isSubmitting = false;
+  isLoading = true;
 
   constructor(
     private api: ApiService,
@@ -525,21 +530,27 @@ export class BookingComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.api.getServices().subscribe(data => {
-      this.services = data;
-      // Check for query param pre-selection
-      this.route.queryParams.subscribe(params => {
-        if (params['serviceId']) {
-          const service = this.services.find(s => s.id == params['serviceId']);
-          if (service) {
-            this.selectService(service);
+    forkJoin({
+      services: this.api.getServices(),
+      stylists: this.api.getStylists()
+    }).subscribe({
+      next: (data) => {
+        this.services = data.services;
+        this.stylists = data.stylists;
+        
+        // Check for query param pre-selection
+        this.route.queryParams.subscribe(params => {
+          if (params['serviceId']) {
+            const service = this.services.find(s => s.id == params['serviceId']);
+            if (service) {
+              this.selectService(service);
+            }
           }
-        }
-      });
-    });
-    
-    this.api.getStylists().subscribe(data => {
-      this.stylists = data;
+        });
+        
+        this.isLoading = false;
+      },
+      error: () => this.isLoading = false
     });
   }
 

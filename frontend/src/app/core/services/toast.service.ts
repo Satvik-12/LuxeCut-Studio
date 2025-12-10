@@ -15,7 +15,7 @@ export class ToastService {
   toasts$ = this.toastsSubject.asObservable();
   private counter = 0;
 
-  show(message: string, type: 'success' | 'error' | 'info' = 'info') {
+  show(message: string, type: 'success' | 'error' | 'info' = 'info', duration: number = 3000) {
     const id = this.counter++;
     const currentToasts = this.toastsSubject.value;
     const newToast: Toast = { message, type, id };
@@ -24,7 +24,7 @@ export class ToastService {
 
     setTimeout(() => {
       this.remove(id);
-    }, 3000); // Auto dismiss after 3 seconds
+    }, duration);
   }
 
   remove(id: number) {

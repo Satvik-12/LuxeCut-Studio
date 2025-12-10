@@ -2,11 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { ApiService } from '../../core/services/api.service';
+import { LoadingBannerComponent } from '../../core/components/loading-banner.component';
 
 @Component({
   selector: 'app-services',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, LoadingBannerComponent],
   template: `
     <div class="services-page">
       <!-- Header -->
@@ -16,7 +17,9 @@ import { ApiService } from '../../core/services/api.service';
       </div>
 
       <div class="container">
-        <div class="services-grid">
+        <app-loading-banner *ngIf="isLoading" message="Loading services..."></app-loading-banner>
+        
+        <div *ngIf="!isLoading" class="services-grid animate-fade-in">
           <div *ngFor="let service of services" class="service-card">
             <!-- Placeholder Image for services -->
             <div class="image-wrapper">
@@ -166,14 +169,30 @@ import { ApiService } from '../../core/services/api.service';
         }
       }
     }
+    
+    .animate-fade-in {
+      animation: fadeIn 0.5s ease-out;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
   `]
 })
 export class ServicesComponent implements OnInit {
   services: any[] = [];
+  isLoading = true;
 
   constructor(private api: ApiService) {}
 
   ngOnInit() {
-    this.api.getServices().subscribe(data => this.services = data);
+    this.api.getServices().subscribe({
+      next: (data) => {
+        this.services = data;
+        this.isLoading = false;
+      },
+      error: () => this.isLoading = false
+    });
   }
 }
