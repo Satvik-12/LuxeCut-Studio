@@ -22,7 +22,11 @@ import { ApiService } from '../../core/services/api.service';
         <div *ngIf="appointment" class="details-box">
           <div class="detail-row">
             <span class="label">Service</span>
-            <span class="value">{{ appointment.service_name }}</span>
+            <span class="value">{{ appointment.service?.name }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Stylist</span>
+            <span class="value">{{ appointment.stylist?.name || 'Any Stylist' }}</span>
           </div>
           <div class="detail-row">
             <span class="label">Date</span>

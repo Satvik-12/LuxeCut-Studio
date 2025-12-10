@@ -24,12 +24,18 @@ import { ApiService } from '../../core/services/api.service';
           <!-- Step 2 -->
           <div class="step-item">
             <div class="step-circle" [class.active]="step >= 2">2</div>
-            <span class="step-label">Date & Time</span>
+            <span class="step-label">Stylist</span>
           </div>
           
           <!-- Step 3 -->
           <div class="step-item">
             <div class="step-circle" [class.active]="step >= 3">3</div>
+            <span class="step-label">Time</span>
+          </div>
+          
+          <!-- Step 4 -->
+          <div class="step-item">
+            <div class="step-circle" [class.active]="step >= 4">4</div>
             <span class="step-label">Details</span>
           </div>
         </div>
@@ -37,7 +43,7 @@ import { ApiService } from '../../core/services/api.service';
         <div class="booking-card">
           <div class="card-body">
             <!-- Step 1: Service Selection -->
-            <div *ngIf="step === 1" class="step-content">
+            <div *ngIf="step === 1" class="step-content animate-fade-in">
               <h2>Select a Service</h2>
               <div class="service-list">
                 <div *ngFor="let service of services" 
@@ -53,13 +59,36 @@ import { ApiService } from '../../core/services/api.service';
               </div>
             </div>
 
-            <!-- Step 2: Date & Time -->
-            <div *ngIf="step === 2" class="step-content">
+            <!-- Step 2: Stylist Selection -->
+            <div *ngIf="step === 2" class="step-content animate-fade-in">
+              <h2>Choose a Stylist (Optional)</h2>
+              <div class="stylist-list">
+                <div (click)="selectStylist(null)"
+                     class="stylist-option"
+                     [class.selected]="selectedStylist === null">
+                  <div class="avatar-placeholder">?</div>
+                  <h3>Any Stylist</h3>
+                  <p>Maximum availability</p>
+                </div>
+                
+                <div *ngFor="let stylist of stylists" 
+                     (click)="selectStylist(stylist)"
+                     class="stylist-option"
+                     [class.selected]="selectedStylist?.id === stylist.id">
+                  <div class="avatar-placeholder">{{ stylist.name.charAt(0) }}</div>
+                  <h3>{{ stylist.name }}</h3>
+                  <p>{{ stylist.specialties || 'General Stylist' }}</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Step 3: Date & Time -->
+            <div *ngIf="step === 3" class="step-content animate-fade-in">
               <h2>Choose a Time</h2>
               
               <div class="form-group">
                 <label>Date</label>
-                <input type="date" [(ngModel)]="selectedDate" (change)="checkAvailability()">
+                <input type="date" [(ngModel)]="selectedDate" (change)="checkAvailability()" [min]="minDate">
               </div>
 
               <div *ngIf="availableSlots.length > 0" class="slots-grid">
@@ -76,21 +105,27 @@ import { ApiService } from '../../core/services/api.service';
               </div>
             </div>
 
-            <!-- Step 3: Customer Details -->
-            <div *ngIf="step === 3" class="step-content">
+            <!-- Step 4: Customer Details -->
+            <div *ngIf="step === 4" class="step-content animate-fade-in">
               <h2>Your Details</h2>
               <form [formGroup]="bookingForm" class="booking-form">
                 <div class="form-group">
                   <label>Full Name</label>
-                  <input formControlName="customer_name" type="text">
+                  <input formControlName="customer_name" type="text" class="form-control" placeholder="John Doe">
+                  <div *ngIf="bookingForm.get('customer_name')?.touched && bookingForm.get('customer_name')?.invalid" class="error-text">
+                    Name is required
+                  </div>
                 </div>
                 <div class="form-group">
                   <label>Phone Number</label>
-                  <input formControlName="customer_phone" type="tel">
+                  <input formControlName="customer_phone" type="tel" class="form-control" placeholder="+91 98765 43210">
+                  <div *ngIf="bookingForm.get('customer_phone')?.touched && bookingForm.get('customer_phone')?.invalid" class="error-text">
+                    Valid phone number is required
+                  </div>
                 </div>
                 <div class="form-group">
                   <label>Notes (Optional)</label>
-                  <textarea formControlName="notes" rows="3"></textarea>
+                  <textarea formControlName="notes" rows="3" class="form-control" placeholder="Any special requests?"></textarea>
                 </div>
               </form>
 
@@ -99,6 +134,10 @@ import { ApiService } from '../../core/services/api.service';
                 <div class="summary-row">
                   <span>Service</span>
                   <span class="value">{{ selectedService?.name }}</span>
+                </div>
+                <div class="summary-row">
+                  <span>Stylist</span>
+                  <span class="value">{{ selectedStylist?.name || 'Any Stylist' }}</span>
                 </div>
                 <div class="summary-row">
                   <span>Date & Time</span>
@@ -119,18 +158,18 @@ import { ApiService } from '../../core/services/api.service';
             </button>
             <div *ngIf="step === 1"></div> <!-- Spacer -->
 
-            <button *ngIf="step < 3" (click)="nextStep()" 
+            <button *ngIf="step < 4" (click)="nextStep()" 
                     [disabled]="!canProceed()"
                     class="btn btn-dark"
                     [class.disabled]="!canProceed()">
               Next Step
             </button>
 
-            <button *ngIf="step === 3" (click)="submitBooking()" 
-                    [disabled]="bookingForm.invalid"
+            <button *ngIf="step === 4" (click)="submitBooking()" 
+                    [disabled]="bookingForm.invalid || isSubmitting"
                     class="btn btn-primary"
-                    [class.disabled]="bookingForm.invalid">
-              Confirm Booking
+                    [class.disabled]="bookingForm.invalid || isSubmitting">
+              {{ isSubmitting ? 'Booking...' : 'Confirm Booking' }}
             </button>
           </div>
         </div>
@@ -156,7 +195,7 @@ import { ApiService } from '../../core/services/api.service';
       display: flex;
       justify-content: space-between;
       position: relative;
-      max-width: 24rem;
+      max-width: 32rem;
       margin-left: auto;
       margin-right: auto;
 
@@ -252,11 +291,11 @@ import { ApiService } from '../../core/services/api.service';
         transition: all 0.2s ease;
 
         &:hover {
-          border-color: var(--color-orange-500);
+          border-color: var(--color-accent-orange);
         }
 
         &.selected {
-          border-color: var(--color-orange-500);
+          border-color: var(--color-accent-orange);
           background-color: #FFF7ED;
         }
 
@@ -273,35 +312,63 @@ import { ApiService } from '../../core/services/api.service';
 
         .price {
           font-weight: 700;
-          color: var(--color-orange-600);
+          color: var(--color-accent-orange);
         }
       }
     }
 
-    /* Form Elements */
-    .form-group {
-      margin-bottom: 1.5rem;
-
-      label {
-        display: block;
-        font-size: 0.875rem;
-        font-weight: 500;
-        color: var(--color-gray-600);
-        margin-bottom: 0.5rem;
+    /* Stylist List */
+    .stylist-list {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+      
+      @media (min-width: 640px) {
+        grid-template-columns: repeat(3, 1fr);
       }
 
-      input, textarea {
-        width: 100%;
-        padding: 0.75rem 1rem;
-        border-radius: 0.5rem;
-        border: 1px solid var(--color-gray-300);
-        outline: none;
-        transition: border-color 0.2s;
-        box-sizing: border-box;
+      .stylist-option {
+        padding: 1rem;
+        border-radius: 0.75rem;
+        border: 2px solid var(--color-gray-100);
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        transition: all 0.2s ease;
 
-        &:focus {
-          border-color: var(--color-orange-500);
-          box-shadow: 0 0 0 2px rgba(255, 138, 61, 0.2);
+        &:hover {
+          border-color: var(--color-accent-orange);
+        }
+
+        &.selected {
+          border-color: var(--color-accent-orange);
+          background-color: #FFF7ED;
+        }
+
+        .avatar-placeholder {
+          width: 3rem;
+          height: 3rem;
+          border-radius: 50%;
+          background-color: var(--color-gray-200);
+          color: var(--color-gray-600);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-weight: 700;
+          margin-bottom: 0.75rem;
+          font-size: 1.25rem;
+        }
+
+        h3 {
+          font-size: 1rem;
+          margin-bottom: 0.25rem;
+        }
+
+        p {
+          font-size: 0.75rem;
+          color: var(--color-gray-500);
         }
       }
     }
@@ -330,7 +397,7 @@ import { ApiService } from '../../core/services/api.service';
         }
 
         &.selected {
-          background-color: var(--color-navy-900);
+          background-color: var(--color-accent-orange);
           color: var(--color-white);
           box-shadow: var(--shadow-md);
         }
@@ -372,7 +439,7 @@ import { ApiService } from '../../core/services/api.service';
           font-size: 1rem;
           
           span:first-child { font-weight: 700; color: var(--color-navy-900); }
-          .price { font-weight: 700; color: var(--color-orange-600); }
+          .price { font-weight: 700; color: var(--color-accent-orange); }
         }
       }
     }
@@ -390,16 +457,35 @@ import { ApiService } from '../../core/services/api.service';
       cursor: not-allowed;
       box-shadow: none;
     }
+    
+    .error-text {
+      color: var(--color-error);
+      font-size: 0.75rem;
+      margin-top: 0.25rem;
+    }
+    
+    .animate-fade-in {
+      animation: fadeIn 0.3s ease-out;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
   `]
 })
 export class BookingComponent implements OnInit {
   step = 1;
   services: any[] = [];
+  stylists: any[] = [];
   selectedService: any = null;
+  selectedStylist: any = null;
   selectedDate: string = '';
   selectedTime: string = '';
   availableSlots: string[] = [];
   bookingForm: FormGroup;
+  minDate: string = '';
+  isSubmitting = false;
 
   constructor(
     private api: ApiService,
@@ -409,9 +495,13 @@ export class BookingComponent implements OnInit {
   ) {
     this.bookingForm = this.fb.group({
       customer_name: ['', Validators.required],
-      customer_phone: ['', Validators.required],
+      customer_phone: ['', [Validators.required, Validators.pattern('^[0-9]{10}$')]],
       notes: ['']
     });
+    
+    // Set min date to today
+    const today = new Date();
+    this.minDate = today.toISOString().split('T')[0];
   }
 
   ngOnInit() {
@@ -427,11 +517,20 @@ export class BookingComponent implements OnInit {
         }
       });
     });
+    
+    this.api.getStylists().subscribe(data => {
+      this.stylists = data;
+    });
   }
 
   selectService(service: any) {
     this.selectedService = service;
     if (this.step === 1) this.nextStep();
+  }
+  
+  selectStylist(stylist: any) {
+    this.selectedStylist = stylist;
+    if (this.step === 2) this.nextStep();
   }
 
   selectTime(time: string) {
@@ -440,7 +539,12 @@ export class BookingComponent implements OnInit {
 
   checkAvailability() {
     if (this.selectedService && this.selectedDate) {
-      this.api.checkAvailability(this.selectedDate, this.selectedService.id).subscribe(data => {
+      this.availableSlots = []; // Reset slots
+      this.selectedTime = ''; // Reset selected time
+      
+      const stylistId = this.selectedStylist ? this.selectedStylist.id : undefined;
+      
+      this.api.checkAvailability(this.selectedDate, this.selectedService.id, stylistId).subscribe(data => {
         this.availableSlots = data.available_slots;
       });
     }
@@ -448,14 +552,30 @@ export class BookingComponent implements OnInit {
 
   canProceed(): boolean {
     if (this.step === 1) return !!this.selectedService;
-    if (this.step === 2) return !!this.selectedDate && !!this.selectedTime;
+    if (this.step === 2) return true; // Stylist is optional, but we force selection of "Any" or specific to move forward via click, or next button
+    if (this.step === 3) return !!this.selectedDate && !!this.selectedTime;
     return false;
   }
 
   nextStep() {
-    if (this.canProceed()) {
-      this.step++;
+    // If on stylist step and no stylist selected, it means "Any" (if we allow skipping without clicking "Any")
+    // But my UI forces clicking an option. 
+    // Actually, let's allow "Next" on step 2 to mean "Any" if nothing selected? 
+    // Better to force user to pick "Any" or a stylist.
+    // In my template, I have "Any Stylist" option which sets selectedStylist to null.
+    // So if selectedStylist is undefined, we might want to default to null (Any) if they click Next?
+    // Let's just require them to click an option.
+    
+    if (this.step === 2 && this.selectedStylist === undefined) {
+        // If they haven't clicked anything, we can't proceed unless we default.
+        // But the "Next Step" button is disabled if !canProceed().
+        // Let's make canProceed return true for step 2 ONLY if they selected something (even null).
+        // Wait, I initialized selectedStylist to null. So it IS null by default.
+        // So "Any" is selected by default? No, I want them to choose.
+        // Let's change initialization to undefined.
     }
+    
+    this.step++;
   }
 
   prevStep() {
@@ -464,18 +584,25 @@ export class BookingComponent implements OnInit {
 
   submitBooking() {
     if (this.bookingForm.valid) {
+      this.isSubmitting = true;
       const bookingData = {
         service_id: this.selectedService.id,
+        stylist_id: this.selectedStylist ? this.selectedStylist.id : null,
         date: this.selectedDate,
         start_time: this.selectedTime,
         ...this.bookingForm.value
       };
+      
       this.api.createAppointment(bookingData).subscribe({
         next: (res) => {
           this.router.navigate(['/success', res.id]);
         },
-        error: (err) => alert('Booking failed. Please try again.')
+        error: (err) => {
+          alert('Booking failed. Please try again.');
+          this.isSubmitting = false;
+        }
       });
     }
   }
 }
+

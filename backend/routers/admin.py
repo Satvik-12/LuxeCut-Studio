@@ -67,6 +67,24 @@ def create_service(
 ):
     return crud.create_service(db, service)
 
+@router.get("/services", response_model=List[schemas.Service])
+def read_admin_services(
+    skip: int = 0, 
+    limit: int = 100, 
+    current_user: models.AdminUser = Depends(auth.get_current_admin),
+    db: Session = Depends(database.get_db)
+):
+    return crud.get_all_services_admin(db, skip=skip, limit=limit)
+
+@router.patch("/services/{service_id}", response_model=schemas.Service)
+def update_service(
+    service_id: int,
+    service: schemas.ServiceCreate,
+    current_user: models.AdminUser = Depends(auth.get_current_admin),
+    db: Session = Depends(database.get_db)
+):
+    return crud.update_service(db, service_id, service)
+
 @router.post("/stylists", response_model=schemas.Stylist)
 def create_stylist(
     stylist: schemas.StylistCreate,
@@ -74,3 +92,34 @@ def create_stylist(
     db: Session = Depends(database.get_db)
 ):
     return crud.create_stylist(db, stylist)
+
+@router.get("/stylists", response_model=List[schemas.Stylist])
+def read_admin_stylists(
+    skip: int = 0, 
+    limit: int = 100, 
+    current_user: models.AdminUser = Depends(auth.get_current_admin),
+    db: Session = Depends(database.get_db)
+):
+    # We need a crud method for ALL stylists (including inactive)
+    # crud.get_stylists filters by active.
+    # Let's just use query directly here or add a crud method.
+    # For simplicity, I'll add a crud method or just query here.
+    # Let's query here to save a step, or better, add to crud.py?
+    # I'll query here for now to avoid switching files too much, but crud is better.
+    # Actually, let's use db.query directly as in read_appointments.
+    return db.query(models.Stylist).offset(skip).limit(limit).all()
+
+@router.patch("/stylists/{stylist_id}", response_model=schemas.Stylist)
+def update_stylist(
+    stylist_id: int,
+    stylist: schemas.StylistCreate,
+    current_user: models.AdminUser = Depends(auth.get_current_admin),
+    db: Session = Depends(database.get_db)
+):
+    db_stylist = db.query(models.Stylist).filter(models.Stylist.id == stylist_id).first()
+    if db_stylist:
+        for key, value in stylist.dict().items():
+            setattr(db_stylist, key, value)
+        db.commit()
+        db.refresh(db_stylist)
+    return db_stylist
