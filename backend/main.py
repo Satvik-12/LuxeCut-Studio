@@ -5,7 +5,10 @@ from database import engine
 from routers import public, admin, auth, user
 
 
+import seeder
+
 models.Base.metadata.create_all(bind=engine)
+seeder.seed_all()
 
 app = FastAPI(title="LuxeCut Studio API")
 
