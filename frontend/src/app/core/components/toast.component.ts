@@ -34,13 +34,14 @@ import { ToastService } from '../services/toast.service';
       font-weight: 500;
       cursor: pointer;
       box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+
       animation: slideIn 0.3s ease-out;
       min-width: 250px;
     }
 
-    .success { background-color: #10B981; } /* Emerald-500 */
-    .error { background-color: #EF4444; }   /* Red-500 */
-    .info { background-color: #3B82F6; }    /* Blue-500 */
+    .success { background-color: var(--color-success); }
+    .error { background-color: var(--color-error); }
+    .info { background-color: var(--color-primary-blue); }
 
     @keyframes slideIn {
       from {
