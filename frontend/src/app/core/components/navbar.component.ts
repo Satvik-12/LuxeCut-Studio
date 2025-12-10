@@ -19,14 +19,15 @@ import { AuthService } from '../services/auth.service';
         </div>
 
         <div class="auth-buttons">
-          <ng-container *ngIf="auth.isLoggedIn$ | async; else guestTemplate">
+          <ng-container *ngIf="auth.isLoggedIn$ | async">
             <a routerLink="/user/dashboard" class="btn btn-outline">Dashboard</a>
             <button (click)="auth.logout()" class="btn btn-text">Logout</button>
           </ng-container>
-          <ng-template #guestTemplate>
+          
+          <ng-container *ngIf="!(auth.isLoading$ | async)">
             <a routerLink="/login" class="btn btn-text">Login</a>
             <a routerLink="/signup" class="btn btn-primary">Sign Up</a>
-          </ng-template>
+          </ng-container>
         </div>
       </div>
     </nav>
