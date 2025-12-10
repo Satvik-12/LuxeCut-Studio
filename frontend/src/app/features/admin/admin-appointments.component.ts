@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../core/services/api.service';
+import { interval, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-admin-appointments',
@@ -219,15 +220,26 @@ import { ApiService } from '../../core/services/api.service';
     }
   `]
 })
-export class AdminAppointmentsComponent implements OnInit {
+export class AdminAppointmentsComponent implements OnInit, OnDestroy {
   appointments: any[] = [];
   statusFilter = 'ALL';
   dateFilter = '';
+  private refreshSubscription!: Subscription;
 
   constructor(private api: ApiService) {}
 
   ngOnInit() {
     this.loadAppointments();
+    // Auto-refresh every 15 seconds
+    this.refreshSubscription = interval(15000).subscribe(() => {
+      this.loadAppointments();
+    });
+  }
+
+  ngOnDestroy() {
+    if (this.refreshSubscription) {
+      this.refreshSubscription.unsubscribe();
+    }
   }
 
   loadAppointments() {
