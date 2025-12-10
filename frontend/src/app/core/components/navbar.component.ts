@@ -24,7 +24,7 @@ import { AuthService } from '../services/auth.service';
             <button (click)="auth.logout()" class="btn btn-text">Logout</button>
           </ng-container>
           
-          <ng-container *ngIf="!(auth.isLoading$ | async)">
+          <ng-container *ngIf="!(auth.isLoggedIn$ | async) && !(auth.isLoading$ | async)">
             <a routerLink="/login" class="btn btn-text">Login</a>
             <a routerLink="/signup" class="btn btn-primary">Sign Up</a>
           </ng-container>
