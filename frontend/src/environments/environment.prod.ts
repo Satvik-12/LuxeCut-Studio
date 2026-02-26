@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiBaseUrl: 'https://luxecut-studio.onrender.com'
+  apiBaseUrl: 'http://152.53.132.162:8000/'
 };
