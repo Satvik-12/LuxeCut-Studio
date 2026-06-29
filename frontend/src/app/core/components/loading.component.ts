@@ -344,6 +344,7 @@ export class LoadingComponent implements OnInit, OnDestroy {
   private progressTimer: any;
   private startTime = 0;
   private backendReady = false;
+  private pingInFlight = false;
   private readonly MAX_WAIT_MS = 60000; // 60 second timeout
   private readonly POLL_INTERVAL_MS = 3000; // Poll every 3 seconds
   private readonly statusMessages = [
@@ -372,6 +373,8 @@ export class LoadingComponent implements OnInit, OnDestroy {
   retry() {
     this.hasError = false;
     this.progress = 0;
+    this.backendReady = false;
+    this.pingInFlight = false;
     this.startTime = Date.now();
     this.statusMessage = 'Reconnecting...';
     this.startPolling();
@@ -392,19 +395,25 @@ export class LoadingComponent implements OnInit, OnDestroy {
         return;
       }
 
-      if (!this.backendReady) {
+      if (!this.backendReady && !this.pingInFlight) {
         this.pingBackend();
       }
     }, this.POLL_INTERVAL_MS);
   }
 
   private pingBackend() {
+    if (this.backendReady || this.pingInFlight) return;
+
+    this.pingInFlight = true;
     this.http.get<any>(`${environment.apiBaseUrl}/wakeup`).subscribe({
       next: () => {
+        this.pingInFlight = false;
         this.backendReady = true;
+        this.clearTimers(); // Stop all polling immediately
         this.onBackendReady();
       },
       error: () => {
+        this.pingInFlight = false;
         // Backend not ready yet, will retry on next poll
       }
     });
