@@ -1,9 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
 import { ToastComponent } from './core/components/toast.component';
-import { ApiService } from './core/services/api.service';
 import { LoadingComponent } from './core/components/loading.component';
 
 @Component({
@@ -12,16 +11,9 @@ import { LoadingComponent } from './core/components/loading.component';
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
-export class AppComponent implements OnInit {
+export class AppComponent {
   title = 'luxe-cut-frontend';
   isLoading = true;
-
-  constructor(private apiService: ApiService) {
-    this.apiService.wakeup().subscribe();
-  }
-
-  ngOnInit() {
-  }
 
   onLoadingComplete() {
     this.isLoading = false;
