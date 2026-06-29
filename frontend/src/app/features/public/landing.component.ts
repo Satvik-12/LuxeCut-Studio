@@ -167,7 +167,7 @@ import { RouterLink } from '@angular/router';
             </div>
           </div>
           <div class="copyright">
-            © 2025 LuxeCut Studio. All rights reserved.
+            © 2026 LuxeCut Studio. All rights reserved.
           </div>
         </div>
       </footer>
