@@ -34,13 +34,16 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
 
       toastService.show(errorMessage, 'error');
       
-      // Notify about redirection
-      toastService.show('Redirecting to home in 10 seconds...', 'info', 10000);
+      // Avoid redirecting when on admin pages
+      if (!router.url.includes('/admin')) {
+        // Notify about redirection
+        toastService.show('Redirecting to home in 10 seconds...', 'info', 10000);
 
-      // Redirect to home after 10 seconds
-      setTimeout(() => {
-        router.navigate(['/']);
-      }, 10000);
+        // Redirect to home after 10 seconds
+        setTimeout(() => {
+          router.navigate(['/']);
+        }, 10000);
+      }
 
       return throwError(() => error);
     })
