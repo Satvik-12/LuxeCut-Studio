@@ -106,8 +106,8 @@ import { LoadingBannerComponent } from '../../core/components/loading-banner.com
                 />
               </svg>
               <div class="donut-center">
-                <span class="donut-total">{{ data.total_visits }}</span>
-                <span class="donut-label">visits</span>
+                <span class="donut-total">{{ totalDevices }}</span>
+                <span class="donut-label">devices</span>
               </div>
             </div>
             <div class="donut-legend">
@@ -652,6 +652,7 @@ export class AdminAnalyticsComponent implements OnInit {
   isLoading = true;
   hourlyData: any[] = [];
   deviceSegments: any[] = [];
+  totalDevices = 0;
   private maxBrowserCount = 0;
 
   private deviceColors: Record<string, string> = {
@@ -709,6 +710,7 @@ export class AdminAnalyticsComponent implements OnInit {
     if (!this.data.device_breakdown.length) return;
 
     const total = this.data.device_breakdown.reduce((s: number, d: any) => s + d.visit_count, 0);
+    this.totalDevices = total;
     const circumference = 2 * Math.PI * 15.91549430918954;
     let accumulatedOffset = 0;
 
