@@ -1,7 +1,8 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr, Field, validator
 from typing import Optional, List
 from datetime import date, time, datetime
 from decimal import Decimal
+import re
 
 # Service Schemas
 class ServiceBase(BaseModel):
@@ -95,11 +96,7 @@ class Token(BaseModel):
     access_token: str
     token_type: str
 
-from pydantic import BaseModel, EmailStr, Field, validator
-import re
-
-# ...
-
+# User Schemas
 class UserBase(BaseModel):
     name: str = Field(..., min_length=2, max_length=100)
     email: EmailStr
@@ -131,3 +128,62 @@ class User(UserBase):
 
     class Config:
         orm_mode = True
+
+# Analytics Schemas
+class SiteVisitCreate(BaseModel):
+    session_id: str
+    page_path: str
+    referrer: Optional[str] = None
+    screen_width: Optional[int] = None
+    screen_height: Optional[int] = None
+
+class SiteVisitResponse(BaseModel):
+    id: int
+    session_id: str
+    page_path: str
+    referrer: Optional[str]
+    country: Optional[str]
+    city: Optional[str]
+    device_type: Optional[str]
+    browser: Optional[str]
+    os: Optional[str]
+    screen_width: Optional[int]
+    screen_height: Optional[int]
+    visited_at: Optional[datetime]
+
+    class Config:
+        orm_mode = True
+
+class PageStat(BaseModel):
+    page_path: str
+    visit_count: int
+
+class LocationStat(BaseModel):
+    location: str
+    visit_count: int
+
+class DeviceStat(BaseModel):
+    device_type: str
+    visit_count: int
+
+class BrowserStat(BaseModel):
+    browser: str
+    visit_count: int
+
+class HourlyStat(BaseModel):
+    hour: int
+    visit_count: int
+
+class AnalyticsOverview(BaseModel):
+    total_visits: int
+    visits_today: int
+    visits_this_week: int
+    visits_this_month: int
+    unique_visitors: int
+    top_pages: List[PageStat]
+    top_countries: List[LocationStat]
+    top_cities: List[LocationStat]
+    device_breakdown: List[DeviceStat]
+    browser_breakdown: List[BrowserStat]
+    hourly_breakdown: List[HourlyStat]
+    recent_visits: List[SiteVisitResponse]

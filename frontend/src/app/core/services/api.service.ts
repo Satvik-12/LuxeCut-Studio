@@ -89,4 +89,9 @@ export class ApiService {
   updateStylist(id: number, stylist: any): Observable<any> {
     return this.http.patch<any>(`${this.apiUrl}/admin/stylists/${id}`, stylist);
   }
+
+  // Analytics
+  getAnalyticsOverview(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/admin/analytics/overview`);
+  }
 }

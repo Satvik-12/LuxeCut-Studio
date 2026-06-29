@@ -8,6 +8,7 @@ import { AdminLayoutComponent, AdminDashboardComponent } from './features/admin/
 import { AdminAppointmentsComponent } from './features/admin/admin-appointments.component';
 import { AdminServicesComponent } from './features/admin/admin-services.component';
 import { AdminStylistsComponent } from './features/admin/admin-stylists.component';
+import { AdminAnalyticsComponent } from './features/admin/admin-analytics.component';
 import { PublicLayoutComponent } from './features/public/public-layout.component';
 import { UserLoginComponent } from './features/public/auth/user-login.component';
 import { UserSignupComponent } from './features/public/auth/user-signup.component';
@@ -55,7 +56,8 @@ export const routes: Routes = [
       { path: 'dashboard', component: AdminDashboardComponent },
       { path: 'appointments', component: AdminAppointmentsComponent },
       { path: 'services', component: AdminServicesComponent },
-      { path: 'stylists', component: AdminStylistsComponent }
+      { path: 'stylists', component: AdminStylistsComponent },
+      { path: 'analytics', component: AdminAnalyticsComponent }
     ]
   },
 

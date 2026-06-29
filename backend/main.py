@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import models
 from database import engine
-from routers import public, admin, auth, user
+from routers import public, admin, auth, user, analytics
 
 
 import seeder
@@ -32,6 +32,7 @@ app.include_router(public.router)
 app.include_router(admin.router)
 app.include_router(auth.router)
 app.include_router(user.router)
+app.include_router(analytics.router)
 
 @app.get("/")
 def read_root():

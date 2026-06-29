@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, Date, Time, Text, DECIMAL, DateTime
+from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, Date, Time, Text, Numeric, DateTime
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from database import Base
@@ -10,7 +10,7 @@ class Service(Base):
     name = Column(String(100), nullable=False)
     description = Column(Text, nullable=True)
     duration_minutes = Column(Integer, nullable=False)
-    price = Column(DECIMAL(10, 2), nullable=False)
+    price = Column(Numeric(10, 2), nullable=False)
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
@@ -84,3 +84,21 @@ class AdminUser(Base):
     email = Column(String(100), unique=True, index=True, nullable=False)
     password_hash = Column(String(255), nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+class SiteVisit(Base):
+    __tablename__ = "site_visits"
+
+    id = Column(Integer, primary_key=True, index=True)
+    session_id = Column(String(100), index=True)
+    page_path = Column(String(500))
+    referrer = Column(String(1000), nullable=True)
+    user_agent = Column(Text, nullable=True)
+    ip_address = Column(String(45), nullable=True)
+    country = Column(String(100), nullable=True)
+    city = Column(String(100), nullable=True)
+    device_type = Column(String(20), nullable=True)
+    browser = Column(String(50), nullable=True)
+    os = Column(String(50), nullable=True)
+    screen_width = Column(Integer, nullable=True)
+    screen_height = Column(Integer, nullable=True)
+    visited_at = Column(DateTime(timezone=True), server_default=func.now())
