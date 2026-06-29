@@ -104,17 +104,17 @@ def get_analytics_overview(
     total_visits = db.query(func.count(models.SiteVisit.id)).scalar() or 0
     
     # Visits today
-    visits_today = db.query(func.count(models.SiteVisit.id)).filter(
+    visits_today = db.query(func.count(distinct(models.SiteVisit.session_id))).filter(
         models.SiteVisit.visited_at >= today_start
     ).scalar() or 0
     
     # Visits this week
-    visits_this_week = db.query(func.count(models.SiteVisit.id)).filter(
+    visits_this_week = db.query(func.count(distinct(models.SiteVisit.session_id))).filter(
         models.SiteVisit.visited_at >= week_start
     ).scalar() or 0
     
     # Visits this month
-    visits_this_month = db.query(func.count(models.SiteVisit.id)).filter(
+    visits_this_month = db.query(func.count(distinct(models.SiteVisit.session_id))).filter(
         models.SiteVisit.visited_at >= month_start
     ).scalar() or 0
     
@@ -134,11 +134,11 @@ def get_analytics_overview(
     # Top countries
     top_countries_query = db.query(
         models.SiteVisit.country,
-        func.count(models.SiteVisit.id).label("visit_count")
+        func.count(distinct(models.SiteVisit.session_id)).label("visit_count")
     ).filter(
         models.SiteVisit.country.isnot(None)
     ).group_by(models.SiteVisit.country).order_by(
-        func.count(models.SiteVisit.id).desc()
+        func.count(distinct(models.SiteVisit.session_id)).desc()
     ).limit(10).all()
     
     top_countries = [schemas.LocationStat(location=row[0], visit_count=row[1]) for row in top_countries_query]
@@ -146,11 +146,11 @@ def get_analytics_overview(
     # Top cities
     top_cities_query = db.query(
         models.SiteVisit.city,
-        func.count(models.SiteVisit.id).label("visit_count")
+        func.count(distinct(models.SiteVisit.session_id)).label("visit_count")
     ).filter(
         models.SiteVisit.city.isnot(None)
     ).group_by(models.SiteVisit.city).order_by(
-        func.count(models.SiteVisit.id).desc()
+        func.count(distinct(models.SiteVisit.session_id)).desc()
     ).limit(10).all()
     
     top_cities = [schemas.LocationStat(location=row[0], visit_count=row[1]) for row in top_cities_query]
@@ -158,11 +158,11 @@ def get_analytics_overview(
     # Device breakdown
     device_query = db.query(
         models.SiteVisit.device_type,
-        func.count(models.SiteVisit.id).label("visit_count")
+        func.count(distinct(models.SiteVisit.session_id)).label("visit_count")
     ).filter(
         models.SiteVisit.device_type.isnot(None)
     ).group_by(models.SiteVisit.device_type).order_by(
-        func.count(models.SiteVisit.id).desc()
+        func.count(distinct(models.SiteVisit.session_id)).desc()
     ).all()
     
     device_breakdown = [schemas.DeviceStat(device_type=row[0], visit_count=row[1]) for row in device_query]
@@ -170,11 +170,11 @@ def get_analytics_overview(
     # Browser breakdown
     browser_query = db.query(
         models.SiteVisit.browser,
-        func.count(models.SiteVisit.id).label("visit_count")
+        func.count(distinct(models.SiteVisit.session_id)).label("visit_count")
     ).filter(
         models.SiteVisit.browser.isnot(None)
     ).group_by(models.SiteVisit.browser).order_by(
-        func.count(models.SiteVisit.id).desc()
+        func.count(distinct(models.SiteVisit.session_id)).desc()
     ).limit(10).all()
     
     browser_breakdown = [schemas.BrowserStat(browser=row[0], visit_count=row[1]) for row in browser_query]
@@ -193,10 +193,19 @@ def get_analytics_overview(
     
     hourly_breakdown = [schemas.HourlyStat(hour=int(row[0]), visit_count=row[1]) for row in hourly_query]
     
-    # Recent visits (last 50)
-    recent_visits_query = db.query(models.SiteVisit).order_by(
+    # Recent visits (last 50 unique visitors)
+    raw_recent = db.query(models.SiteVisit).order_by(
         models.SiteVisit.visited_at.desc()
-    ).limit(50).all()
+    ).limit(200).all()
+    
+    seen_sessions = set()
+    recent_visits_query = []
+    for v in raw_recent:
+        if v.session_id not in seen_sessions:
+            seen_sessions.add(v.session_id)
+            recent_visits_query.append(v)
+            if len(recent_visits_query) >= 50:
+                break
     
     return {
         "total_visits": total_visits,

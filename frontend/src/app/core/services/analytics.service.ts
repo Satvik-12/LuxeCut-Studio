@@ -49,10 +49,10 @@ export class AnalyticsService {
   }
 
   private getOrCreateSessionId(): string {
-    let sessionId = sessionStorage.getItem('luxecut_session_id');
+    let sessionId = localStorage.getItem('luxecut_visitor_id');
     if (!sessionId) {
       sessionId = this.generateId();
-      sessionStorage.setItem('luxecut_session_id', sessionId);
+      localStorage.setItem('luxecut_visitor_id', sessionId);
     }
     return sessionId;
   }

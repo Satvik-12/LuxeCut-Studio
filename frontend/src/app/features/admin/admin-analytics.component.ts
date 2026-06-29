@@ -15,16 +15,13 @@ import { LoadingBannerComponent } from '../../core/components/loading-banner.com
     <div *ngIf="!isLoading && data" class="analytics-container">
       <!-- Stat Cards -->
       <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-icon blue">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-              <circle cx="12" cy="12" r="3"/>
-            </svg>
+        <div class="stat-card primary">
+          <div class="stat-icon">
+            <i class="fas fa-eye"></i>
           </div>
-          <div class="stat-info">
-            <span class="stat-label">Total Visits</span>
-            <span class="stat-value">{{ data.total_visits | number }}</span>
+          <div class="stat-details">
+            <h3>Total Pageviews</h3>
+            <p class="stat-value">{{ data.total_visits | number }}</p>
           </div>
         </div>
 
