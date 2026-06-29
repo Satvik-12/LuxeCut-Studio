@@ -187,7 +187,9 @@ def get_analytics_overview(
         models.SiteVisit.visited_at >= now - timedelta(days=7)
     ).group_by(
         extract('hour', models.SiteVisit.visited_at)
-    ).order_by("hour").all()
+    ).order_by(
+        extract('hour', models.SiteVisit.visited_at)
+    ).all()
     
     hourly_breakdown = [schemas.HourlyStat(hour=int(row[0]), visit_count=row[1]) for row in hourly_query]
     
@@ -196,19 +198,17 @@ def get_analytics_overview(
         models.SiteVisit.visited_at.desc()
     ).limit(50).all()
     
-    recent_visits = [schemas.SiteVisitResponse.from_orm(v) for v in recent_visits_query]
-    
-    return schemas.AnalyticsOverview(
-        total_visits=total_visits,
-        visits_today=visits_today,
-        visits_this_week=visits_this_week,
-        visits_this_month=visits_this_month,
-        unique_visitors=unique_visitors,
-        top_pages=top_pages,
-        top_countries=top_countries,
-        top_cities=top_cities,
-        device_breakdown=device_breakdown,
-        browser_breakdown=browser_breakdown,
-        hourly_breakdown=hourly_breakdown,
-        recent_visits=recent_visits
-    )
+    return {
+        "total_visits": total_visits,
+        "visits_today": visits_today,
+        "visits_this_week": visits_this_week,
+        "visits_this_month": visits_this_month,
+        "unique_visitors": unique_visitors,
+        "top_pages": top_pages,
+        "top_countries": top_countries,
+        "top_cities": top_cities,
+        "device_breakdown": device_breakdown,
+        "browser_breakdown": browser_breakdown,
+        "hourly_breakdown": hourly_breakdown,
+        "recent_visits": recent_visits_query
+    }
