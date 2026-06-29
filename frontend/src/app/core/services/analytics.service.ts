@@ -29,6 +29,11 @@ export class AnalyticsService {
   }
 
   private trackPageVisit(pagePath: string) {
+    // Exclude admin pages from analytics tracking
+    if (pagePath.startsWith('/admin')) {
+      return;
+    }
+
     const payload = {
       session_id: this.sessionId,
       page_path: pagePath,
